@@ -21,9 +21,17 @@ This is an initial functional implementation of the master specification. The in
 - Public production deployment, environment publication or fresh-task snapshot restoration validation unless separately reported.
 - Full coverage of every field, visual treatment, analytics breakdown and automation example from the master specification.
 
+## Agentic OS addition
+
+The built-in `/os` command workspace adds the screenshot-inspired dark HUD, PostgreSQL-backed sessions/transcripts/reference memory, durable run records and execution events, a local deterministic skill router and an optional structured OpenAI planner. Nine bounded business skills use existing services; the approval inbox remains authoritative. The local router does not require a model key. Codex/Claude desktop bridges, arbitrary host-shell execution, a local Whisper engine and unrestricted autonomous research are NOT IMPLEMENTED.
+
+The new layer passed 11 PostgreSQL acceptance tests, five mocked optional-AI planner tests and three browser tests alongside the existing CRM suites. No live model request was tested because a model credential was not configured. See [Agentic OS](AGENTIC-OS.md) for its configuration, data-sharing boundary and limits.
+
 ## Acceptance limits
 
-The supported core flow was exercised with fictional demo records and isolated PostgreSQL fixtures from new lead through underwriting, approvals, contract evidence, buyer matching/selection, closing, revenue/expenses, P&L, postmortem and audit. The onboarding validation passed 42 Vitest tests, all three Playwright tests against both development and optimized production servers, strict type checks, lint, formatting and a production build. Production browser/API checks completed in 7.9 seconds. Dependency installation and full service restart were repeated successfully; a repeated startup preserved existing application and worker processes. The tested 390-pixel mobile viewport had no horizontal document overflow.
+The supported core flow was exercised with fictional demo records and isolated PostgreSQL fixtures from new lead through underwriting, approvals, contract evidence, buyer matching/selection, closing, revenue/expenses, P&L, postmortem and audit. The latest validation passed all 58 Vitest tests, all six Playwright browser/API tests against development (25 seconds) and production (18.9 seconds), strict type checks, lint, formatting and the Agentic OS production build. The final owner-time-zone formatting adjustment also passed a production rebuild. The tested 390-pixel mobile view had a 390-pixel document width, and a 1,440-pixel desktop view reported no browser errors.
+
+Dependency installation was repeated successfully. Foreground supervised startup with `npm run os:start` was verified across separate tool calls; the optimized application was also tested under `npm run os:start:production`. The cloud runner terminates detached children after their parent exits, so the earlier one-shot helper must not be used as evidence of persistent availability. Keep the foreground supervisor or individual foreground services running.
 
 The seed contains 46 properties, 18 sellers and 34 buyers; repeated seeding preserved existing records. Extra DEMO fixtures created by browser tests may increase current counts. LIVE business tables were empty in the prepared instance.
 

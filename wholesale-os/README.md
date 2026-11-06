@@ -4,16 +4,20 @@ An owner-controlled real estate wholesaling workspace built alongside the origin
 
 This is an initial operational implementation, not a claim that the entire master specification or production readiness has been completed. See [implementation status](docs/STATUS.md) for the delivered scope and limits.
 
+The built-in [Agentic OS](docs/AGENTIC-OS.md) workspace at `/os` adds a dark command HUD, persistent conversations and reference memory, run events and bounded business skills. It works with a local deterministic router by default; an optional model can propose one validated skill. The existing approval inbox controls owner decisions. No external operating-system repository, shell access or Codex/Claude desktop bridge is installed.
+
 ## Development
 
 Use Node.js 22 or later. Run these commands from `wholesale-os/` in the existing checkout; each cloud task is already isolated and does not need another Git worktree.
 
 ```sh
 npm ci
-bash scripts/dev-up.sh
+npm run os:start
 ```
 
-The startup helper prepares local configuration, starts/reuses PostgreSQL, migrates, seeds fictional DEMO records, creates the demo-only account, and starts the application and worker. Logs and process IDs are in the ignored `.local/` directory. It does not configure a production deployment.
+Keep this command running in a long-lived terminal. The foreground supervisor prepares local configuration, starts/reuses PostgreSQL, migrates, seeds fictional DEMO records, creates the demo-only account, and starts the application and worker. It checks database connectivity and application/worker process liveness every five seconds and exits with an error if a service stops. Logs and process IDs are in the ignored `.local/` directory. This cloud runner can terminate detached children when their parent exits, so a one-shot startup command is insufficient. It does not configure a production deployment.
+
+For an optimized local preview, run `npm run build`, then keep `npm run os:start:production` running. Stop the development web process you started before switching; the helper reuses an already healthy web server. This command uses the production Next.js build with the same local DEMO setup, not a public deployment.
 
 For separate foreground terminals instead:
 

@@ -18,6 +18,12 @@ const config: NextConfig = {
           },
         ],
       },
+      {
+        source: '/os',
+        headers: [
+          { key: 'Permissions-Policy', value: 'camera=(), microphone=(self), geolocation=()' },
+        ],
+      },
     ];
   },
 };

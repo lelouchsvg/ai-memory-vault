@@ -8,6 +8,8 @@ Server endpoints require an authenticated actor. Roles are OWNER, OPERATOR and V
 
 Response headers are configured in `next.config.ts`. Secrets belong in runtime environment settings or a production secret manager. Keep `.env.local` and runtime files untracked. Database audit history rejects ordinary updates/deletes, and material mutations are recorded transactionally with business changes.
 
+Agentic OS sessions, transcripts, saved notes, runs and events are additionally scoped to the authenticated actor and DEMO/LIVE mode. Its command endpoint requires the same origin, role and mode checks and reads a bounded request body. Model planning is restricted to one validated skill proposal; execution remains in permission-checked server services. The web console exposes run events, not a shell or PTY. Optional AI planning shares request/property-label context with the configured provider; review [Agentic OS](AGENTIC-OS.md) before enabling it with real data. Browser speech behavior depends on browser capabilities and is not local Whisper processing.
+
 ## Deployment requirements
 
 - Use verified TLS for managed PostgreSQL and HTTPS for the application.

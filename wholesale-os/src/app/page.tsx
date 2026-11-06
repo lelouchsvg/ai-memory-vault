@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState, useCallback, type ReactNode, type FormEvent } from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import {
   Activity,
   ArrowDownLeft,
@@ -493,8 +494,16 @@ export default function Home() {
     }
   }
   useEffect(() => {
-    const saved = localStorage.getItem('tower-mode');
+    const query = new URLSearchParams(window.location.search);
+    const saved = query.get('mode') || localStorage.getItem('tower-mode');
     if (saved === 'LIVE') setMode('LIVE');
+    const targetSection = query.get('section');
+    if (targetSection && NAV.some((item) => item.id === targetSection)) setSection(targetSection);
+    const propertyId = query.get('propertyId');
+    if (propertyId && /^[a-f0-9-]{36}$/i.test(propertyId)) {
+      setSection('properties');
+      setSelected(propertyId);
+    }
     setDark(localStorage.getItem('tower-theme') === 'dark');
     setOnboarded(localStorage.getItem('tower-onboarded') === 'yes');
   }, []);
@@ -3633,6 +3642,11 @@ export default function Home() {
         </div>
         <p className="nav-section-label">WORKSPACE</p>
         <nav className="nav-list">
+          <Link className="nav-item" href="/os" aria-label="Open Agentic OS">
+            <Sparkles size={18} />
+            <span className="nav-label">Agentic OS</span>
+            <ArrowUpRight size={13} />
+          </Link>
           {NAV.map((item, i) => (
             <div key={item.id}>
               {i === 11 && <p className="nav-section-label">OPERATIONS</p>}

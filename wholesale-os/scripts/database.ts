@@ -1,5 +1,12 @@
 import EmbeddedPostgres from 'embedded-postgres';
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
+import {
+  existsSync,
+  mkdirSync,
+  readFileSync,
+  writeFileSync,
+  unlinkSync,
+  copyFileSync,
+} from 'node:fs';
 import { randomBytes } from 'node:crypto';
 import { resolve } from 'node:path';
 
@@ -21,6 +28,44 @@ if (url.hostname !== '127.0.0.1' || url.port !== '54329') {
   );
 }
 const databaseDir = resolve('.local/postgres');
+// A suspended task can leave a zombie PID and stale lock. Never remove locks for a live process.
+const pidPath = resolve(databaseDir, 'postmaster.pid');
+if (existsSync(pidPath)) {
+  const lines = readFileSync(pidPath, 'utf8').split('\n');
+  const oldPid = Number(lines[0]);
+  let dead = false;
+  if (Number.isInteger(oldPid) && oldPid > 1) {
+    try {
+      const stat = readFileSync(`/proc/${oldPid}/stat`, 'utf8');
+      dead = stat.slice(stat.lastIndexOf(')') + 2).split(' ')[0] === 'Z';
+    } catch (error) {
+      if ((error as NodeJS.ErrnoException).code === 'ENOENT') {
+        try {
+          process.kill(oldPid, 0);
+        } catch (e) {
+          dead = (e as NodeJS.ErrnoException).code === 'ESRCH';
+        }
+      }
+    }
+  }
+  if (dead && lines[1] === databaseDir && lines[3] === '54329') {
+    mkdirSync('.local/stale-locks', { recursive: true, mode: 0o700 });
+    copyFileSync(pidPath, resolve('.local/stale-locks', `postmaster-${Date.now()}.pid`));
+    const socket = resolve('.local/.s.PGSQL.54329');
+    const socketLock = `${socket}.lock`;
+    if (
+      existsSync(socketLock) &&
+      Number(readFileSync(socketLock, 'utf8').split('\n')[0]) === oldPid
+    ) {
+      unlinkSync(socketLock);
+      if (existsSync(socket)) unlinkSync(socket);
+    }
+    unlinkSync(pidPath);
+    console.log(
+      'Recovered stale PostgreSQL lock from a terminated task; database files preserved.',
+    );
+  }
+}
 const pg = new EmbeddedPostgres({
   databaseDir,
   user: decodeURIComponent(url.username),
@@ -35,7 +80,9 @@ const pg = new EmbeddedPostgres({
     '-c',
     `unix_socket_directories=${resolve('.local')}`,
   ],
-  onLog: () => {},
+  onLog: (message: string) => {
+    if (/FATAL|ERROR|WARNING/.test(message)) console.error(message);
+  },
   onError: (error: unknown) => {
     const msg = String(error);
     if (/FATAL|ERROR/.test(msg)) console.error(msg);

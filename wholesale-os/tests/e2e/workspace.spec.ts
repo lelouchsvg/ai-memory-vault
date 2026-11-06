@@ -189,11 +189,17 @@ test('lead to underwriting, owner approval, contract, buyer, closing and P&L rem
   await expect(page.locator('.stat-card').filter({ hasText: 'Recorded revenue' })).toContainText(
     '$20,000',
   );
-  await api({ action: 'runJobs' });
-  const closedState = await (await page.request.get('/api/state?mode=DEMO')).json();
-  expect(closedState.properties.find((p: any) => p.id === property.id).postmortem.outcome).toBe(
-    'CLOSED',
-  );
+  // The background worker may already hold the FORGE job; await its committed result.
+  await expect
+    .poll(
+      async () => {
+        await api({ action: 'runJobs' });
+        const closedState = await (await page.request.get('/api/state?mode=DEMO')).json();
+        return closedState.properties.find((p: any) => p.id === property.id).postmortem?.outcome;
+      },
+      { timeout: 15000 },
+    )
+    .toBe('CLOSED');
   await page.getByRole('button', { name: 'Agent Center', exact: true }).click();
   await expect(page.getByRole('heading', { name: 'Your operations team' })).toBeVisible();
   const live = await page.request.get('/api/state?mode=LIVE');

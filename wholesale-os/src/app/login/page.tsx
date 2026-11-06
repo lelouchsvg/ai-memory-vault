@@ -4,14 +4,18 @@ import { ArrowUpRight, ShieldCheck, Building2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 export default function Login() {
   const router = useRouter();
+  const [destination, setDestination] = useState('/');
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
   const [demo, setDemo] = useState(false);
   useEffect(() => {
+    const next = new URLSearchParams(window.location.search).get('next');
+    const target = next === '/os' ? '/os' : '/';
+    setDestination(target);
     fetch('/api/auth')
       .then((r) => r.json())
       .then((d) => {
-        if (d.actor) router.replace('/');
+        if (d.actor) router.replace(target);
         setDemo(d.demoEnabled);
       })
       .catch(() => setError('Could not connect to the server.'));
@@ -28,7 +32,7 @@ export default function Login() {
       });
       const d = await r.json();
       if (!r.ok) throw new Error(d.error);
-      router.replace('/');
+      router.replace(destination);
       router.refresh();
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Sign-in failed.');

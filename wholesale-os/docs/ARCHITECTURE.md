@@ -6,6 +6,8 @@ Next.js serves the React operator interface and authenticated JSON endpoints. Bu
 
 The application is separate from the original AI Memory Vault notes and templates. It does not execute the memory-vault build instructions or use those documents as business policies.
 
+The `/os` [Agentic OS](AGENTIC-OS.md) interface is a command layer over the same canonical services. An authenticated `/api/os` endpoint handles actor/mode-scoped sessions, transcripts, memory and run requests. A local deterministic router, or an optional validated OpenAI planner, selects one bounded skill. The durable worker executes that skill through existing permission-checked business commands. The model has no database, approval or shell tools, and reference memory is never executable policy.
+
 ```mermaid
 flowchart LR
   UI[Operator workspace] --> API[Authenticated JSON endpoints]
