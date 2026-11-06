@@ -7,8 +7,8 @@
     "node": ">=22"
   },
   "scripts": {
-    "os:start": "bash scripts/dev-up.sh --stay-alive",
-    "os:start:production": "CONTROL_TOWER_WEB_MODE=production bash scripts/dev-up.sh --stay-alive",
+    "os:start": "node scripts/local-start.mjs",
+    "os:start:production": "node scripts/local-start.mjs --production",
     "dev": "next dev --hostname 0.0.0.0",
     "build": "next build --webpack",
     "start": "next start --hostname 0.0.0.0",

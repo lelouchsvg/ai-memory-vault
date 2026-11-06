@@ -77,8 +77,7 @@ const pg = new EmbeddedPostgres({
   postgresFlags: [
     '-c',
     'listen_addresses=127.0.0.1',
-    '-c',
-    `unix_socket_directories=${resolve('.local')}`,
+    ...(process.platform === 'win32' ? [] : ['-c', `unix_socket_directories=${resolve('.local')}`]),
   ],
   onLog: (message: string) => {
     if (/FATAL|ERROR|WARNING/.test(message)) console.error(message);

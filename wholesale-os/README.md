@@ -6,6 +6,12 @@ This is an initial operational implementation, not a claim that the entire maste
 
 The built-in [Agentic OS](docs/AGENTIC-OS.md) workspace at `/os` adds a dark command HUD, persistent conversations and reference memory, run events and bounded business skills. It works with a local deterministic router by default; an optional model can propose one validated skill. The existing approval inbox controls owner decisions. No external operating-system repository, shell access or Codex/Claude desktop bridge is installed.
 
+## Windows quick start
+
+Install Node.js 24 LTS, extract the source package, then open `wholesale-os` and double-click `Start-Control-Tower.cmd`. It installs dependencies when needed, starts PostgreSQL, the app and the worker, and opens your browser. Keep its window open while using the demo.
+
+For PowerShell, open a terminal **inside the extracted wholesale-os folder** and run `npm.cmd ci`, then `npm.cmd run os:start`. Using `npm.cmd` avoids the PowerShell script wrapper; no execution-policy change or WSL installation is needed. The Node launcher was validated in the Linux cloud environment; native Windows execution still needs user validation.
+
 ## Development
 
 Use Node.js 22 or later. Run these commands from `wholesale-os/` in the existing checkout; each cloud task is already isolated and does not need another Git worktree.
